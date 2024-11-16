@@ -9,12 +9,15 @@
  *      ▐   ▐     █         ▐     ▐    █    ▐    ▐
  *                          ▐                    ▐
  *
- * ENG: This file is strictly confidential and personal.
- * It contains code developed for private purposes and must not be distributed, shared or used without the explicit permission of the author.
- * Any violation will be subject to legal action.
- * FRA: Ce fichier est strictement confidentiel et personnel.
- * Il contient du code développé à des fins privées et ne doit en aucun cas être distribué, partagé ou utilisé sans autorisation explicite de l'auteur.
- * Toute violation sera passible de poursuites légales.
+ * ENG: This file is part of a public API.
+ * It contains code intended for public use and distribution.
+ * Contributions and usage are encouraged under the terms of the applicable license.
+ * Unauthorized modifications or improper use may result in legal consequences.
+ *
+ * FRA: Ce fichier fait partie d'une API publique.
+ * Il contient du code destiné à être utilisé et distribué publiquement.
+ * Les contributions et l'utilisation sont encouragées selon les termes de la licence applicable.
+ * Toute modification non autorisée ou utilisation incorrecte peut entraîner des conséquences légales.
  *
  * @author  ValresMC
  * @version v0.0.1
@@ -26,7 +29,7 @@ namespace Valres\DiscordLog;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
-use Valres\DiscordLog\exceptions\HookAlreadyRegistered;
+use Valres\DiscordLog\exceptions\AlreadyRegistered;
 use Valres\DiscordLog\managers\MessageQueues;
 
 final class DiscordLogHandler
@@ -38,11 +41,11 @@ final class DiscordLogHandler
      *
      * @param  Plugin $plugin The plugin to register with.
      * @return void
-     * @throws HookAlreadyRegistered
+     * @throws AlreadyRegistered
      */
     public static function register(Plugin $plugin): void {
         if(self::isRegistered()){
-            throw new HookAlreadyRegistered("DiscordLog is already registered.");
+            throw new AlreadyRegistered("DiscordLog is already registered.");
         }
 
         self::$registrant = $plugin;
