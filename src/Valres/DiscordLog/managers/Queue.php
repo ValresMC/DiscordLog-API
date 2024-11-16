@@ -110,6 +110,8 @@ class Queue
      */
     public function update(): void {
         if(--$this->timer <= 0){
+            if(empty($this->messages)) return;
+            
             $message = (new Message())->setContent(join("\n", $this->messages));
             $this->getWebhook()->send($message);
             $this->deleteMessages();
