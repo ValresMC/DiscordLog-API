@@ -9,10 +9,10 @@ A robust and efficient PocketMine-MP virion for managing webhook integrations an
 ```php
 use Valres\DiscordLog\DiscordLogHandler;
 
-// onEnable() :
-    if(!DiscordLogHandler::isRegistered()){
-        DiscordLogHandler::register($this);
-    }
+# onEnable() :
+if(!DiscordLogHandler::isRegistered()){
+    DiscordLogHandler::register($this);
+}
 ```
 
 ### Register a queue :
@@ -20,11 +20,11 @@ use Valres\DiscordLog\DiscordLogHandler;
 use Valres\DiscordLog\managers\MessageQueues;
 use Valres\DiscordLog\discord\Webhook;
 
-// Preferably in onEnable() :
+# Preferably in onEnable() :
 MessageQueues::getInstance()->registerQueue(
     "your_queue_name",
     new Webhook("url_of_your_webhook"),
-    5 // Seconds between sending pending messages.
+    5 # seconds between sending pending messages.
 );
 ```
 
@@ -32,9 +32,9 @@ MessageQueues::getInstance()->registerQueue(
 ```php
 use Valres\DiscordLog\managers\MessageQueues;
 
-// Wherever you need :
+# Wherever you need :
 MessageQueues::getInstance()->addMessageInQueue(
-    "your_queue_name", // The queue will be registered !!
+    "your_queue_name", # The queue will be registered !!
     "your_message"
 );
 ```
