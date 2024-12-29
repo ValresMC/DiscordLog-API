@@ -33,9 +33,20 @@ MessageQueues::getInstance()->registerQueue(
 use Valres\DiscordLog\managers\MessageQueues;
 
 # Wherever you need :
-MessageQueues::getInstance()->addMessageInQueue(
+MessageQueues::getInstance()->addMessage(
     "your_queue_name", # The queue will be registered !!
     "your_message"
+);
+```
+
+### Add an embed to a queue :
+```php
+use Valres\DiscordLog\managers\MessageQueues;
+
+# Wherever you need :
+MessageQueues::getInstance()->addMessage(
+    "your_queue_name", # The queue will be registered !!
+    (new Embed())->setTitle("Your title")->setDescription("Your description")
 );
 ```
 
