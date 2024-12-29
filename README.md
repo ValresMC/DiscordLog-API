@@ -33,7 +33,7 @@ MessageQueues::getInstance()->registerQueue(
 use Valres\DiscordLog\managers\MessageQueues;
 
 # Wherever you need :
-MessageQueues::getInstance()->addMessage(
+MessageQueues::getInstance()->addMessageInQueue(
     "your_queue_name", # The queue will be registered !!
     "your_message"
 );
@@ -44,7 +44,7 @@ MessageQueues::getInstance()->addMessage(
 use Valres\DiscordLog\managers\MessageQueues;
 
 # Wherever you need :
-MessageQueues::getInstance()->addMessage(
+MessageQueues::getInstance()->addEmbedInQueue(
     "your_queue_name", # The queue will be registered !!
     (new Embed())->setTitle("Your title")->setDescription("Your description")
 );
