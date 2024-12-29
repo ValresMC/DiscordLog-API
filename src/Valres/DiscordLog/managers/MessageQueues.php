@@ -86,33 +86,33 @@ class MessageQueues
 
     /**
      * Add a message in a queue.
-     * @param string $queueName  The queue name.
-     * @param string ...$message The message to add.
+     * @param string $queueName   The queue name.
+     * @param string ...$messages The message to add.
      * @return void
      * @throws QueueNotFoundException
      */
-    public function addMessageInQueue(string $queueName, string ...$message): void {
+    public function addMessageInQueue(string $queueName, string ...$messages): void {
         $queue = $this->getQueue($queueName);
         if($queue === null){
             throw new QueueNotFoundException("The queue '$queueName' is not registered.");
         }
 
-        $queue->addMessage(...$message);
+        foreach($messages as $message) $queue->addMessage($message);
     }
 
     /**
      * Add an embed in a queue.
-     * @param string $queueName The queue name.
-     * @param Embed ...$embed   The Embed to add.
+     * @param string $queueName  The queue name.
+     * @param Embed ...$embeds   The Embed to add.
      * @return void
      * @throws QueueNotFoundException
      */
-    public function addEmbedInQueue(string $queueName, Embed ...$embed): void {
+    public function addEmbedInQueue(string $queueName, Embed ...$embeds): void {
         $queue = $this->getQueue($queueName);
         if($queue === null){
             throw new QueueNotFoundException("The queue '$queueName' is not registered.");
         }
 
-        $queue->addEmbed(...$embed);
+        foreach($embeds as $embed) $queue->addEmbed($embed);
     }
 }
