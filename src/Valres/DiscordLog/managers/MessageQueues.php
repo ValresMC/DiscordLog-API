@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace Valres\DiscordLog\managers;
 
 use pocketmine\utils\SingletonTrait;
+use Valres\DiscordLog\discord\Embed;
 use Valres\DiscordLog\discord\Webhook;
 use Valres\DiscordLog\exceptions\QueueAlreadyRegisteredException;
 use Valres\DiscordLog\exceptions\QueueNotFoundException;
@@ -84,18 +85,34 @@ class MessageQueues
     }
 
     /**
-     * Add a message in the queue.
-     * @param string $queueName The queue name.
-     * @param string $message   The message to add.
+     * Add a message in a queue.
+     * @param string $queueName  The queue name.
+     * @param string ...$message The message to add.
      * @return void
      * @throws QueueNotFoundException
      */
-    public function addMessageInQueue(string $queueName, string $message): void {
+    public function addMessageInQueue(string $queueName, string ...$message): void {
         $queue = $this->getQueue($queueName);
         if($queue === null){
             throw new QueueNotFoundException("The queue '$queueName' is not registered.");
         }
 
-        $queue->addMessageInQueue($message);
+        $queue->addMessage(...$message);
+    }
+
+    /**
+     * Add an embed in a queue.
+     * @param string $queueName The queue name.
+     * @param Embed ...$embed   The Embed to add.
+     * @return void
+     * @throws QueueNotFoundException
+     */
+    public function addEmbedInQueue(string $queueName, Embed ...$embed): void {
+        $queue = $this->getQueue($queueName);
+        if($queue === null){
+            throw new QueueNotFoundException("The queue '$queueName' is not registered.");
+        }
+
+        $queue->addEmbed(...$embed);
     }
 }

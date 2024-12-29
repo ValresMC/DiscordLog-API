@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace Valres\DiscordLog\managers;
 
 use InvalidArgumentException;
+use Valres\DiscordLog\discord\Embed;
 use Valres\DiscordLog\discord\Message;
 use Valres\DiscordLog\discord\Webhook;
 
@@ -36,10 +37,11 @@ class Queue
     public int $timer;
 
     public function __construct(
-        protected string $name,
+        protected string  $name,
         protected Webhook $webhook,
-        protected int $sendTimer,
-        protected array $messages = []
+        protected int     $sendTimer,
+        protected array   $messages = [],
+        protected array   $embeds = []
     ) {
         $this->timer = $this->sendTimer;
     }
@@ -81,17 +83,37 @@ class Queue
     }
 
     /**
+     * Get all pending Embed in queue.
+     *
+     * @return Embed[] The list of the pending Embeds.
+     */
+    public function getEmbeds(): array {
+        return $this->embeds;
+    }
+
+    /**
      * Add a message to the queue.
      *
      * @param string $message The message to add.
      * @return void
      * @throws InvalidArgumentException if the message is empty.
      */
-    public function addMessageInQueue(string $message): void {
+    public function addMessage(string $message): void {
         if(empty($message)){
             throw new InvalidArgumentException("Message in queue '" . $this->name . "' cannot be empty.");
         }
         $this->messages[] = $message;
+    }
+
+    /**
+     * Add an Embed to the queue.
+     *
+     * @param Embed $embed The message to add.
+     * @return void
+     * @throws InvalidArgumentException if the message is empty.
+     */
+    public function addEmbed(Embed $embed): void {
+        $this->embeds[] = $embed;
     }
 
     /**
@@ -104,17 +126,30 @@ class Queue
     }
 
     /**
+     * Delete Embeds in the queue.
+     *
+     * @return void
+     */
+    public function deleteEmbeds(): void {
+        $this->embeds = [];
+    }
+
+    /**
      * Update the queue, decrementing the timer and resetting if necessary.
      *
      * @return void
      */
     public function update(): void {
         if(--$this->timer <= 0){
-            if(empty($this->messages)) return;
-            
+            if(empty($this->messages) and empty($this->embeds)) return;
+
             $message = (new Message())->setContent(join("\n", $this->messages));
+            foreach($this->embeds as $embed) $message->addEmbed($embed);
             $this->getWebhook()->send($message);
+
             $this->deleteMessages();
+            $this->deleteEmbeds();
+
             $this->timer = $this->getSendTimer();
         }
     }
