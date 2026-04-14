@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace Valres\DiscordLog\managers;
 
 use InvalidArgumentException;
+use JsonSerializable;
 use Valres\DiscordLog\discord\Embed;
 use Valres\DiscordLog\discord\Message;
 use Valres\DiscordLog\discord\Webhook;
@@ -36,120 +37,57 @@ class Queue
 {
     public int $timer;
 
+    /**
+     * @param JsonSerializable[] $payloads
+     */
     public function __construct(
-        protected string  $name,
+        protected string $name,
         protected Webhook $webhook,
-        protected int     $sendTimer,
-        protected array   $messages = [],
-        protected array   $embeds = []
+        protected int $sendTimer,
+        protected array $payloads = []
     ) {
         $this->timer = $this->sendTimer;
     }
 
-    /**
-     * Get the name of the queue.
-     *
-     * @return string The name of the queue.
-     */
     public function getName(): string {
         return $this->name;
     }
 
-    /**
-     * Get the Webhook of thr queue.
-     *
-     * @return Webhook
-     */
     public function getWebhook(): Webhook {
         return $this->webhook;
     }
 
-    /**
-     * Get the time between each sending of messages.
-     *
-     * @return int The send timer interval.
-     */
     public function getSendTimer(): int {
         return $this->sendTimer;
     }
 
     /**
-     * Get all pending messages in queue.
-     *
-     * @return array The list of pending messages.
+     * @return JsonSerializable[]
      */
-    public function getMessages(): array {
-        return $this->messages;
+    public function getPayloads(): array {
+        return $this->payloads;
     }
 
-    /**
-     * Get all pending Embed in queue.
-     *
-     * @return Embed[] The list of the pending Embeds.
-     */
-    public function getEmbeds(): array {
-        return $this->embeds;
+    public function addPayload(JsonSerializable $payload): void {
+        $this->payloads[] = $payload;
     }
 
-    /**
-     * Add a message to the queue.
-     *
-     * @param string $message The message to add.
-     * @return void
-     * @throws InvalidArgumentException if the message is empty.
-     */
-    public function addMessage(string $message): void {
-        if(empty($message)){
-            throw new InvalidArgumentException("Message in queue '" . $this->name . "' cannot be empty.");
-        }
-        $this->messages[] = $message;
+    public function deletePayloads(): void {
+        $this->payloads = [];
     }
 
-    /**
-     * Add an Embed to the queue.
-     *
-     * @param Embed $embed The message to add.
-     * @return void
-     * @throws InvalidArgumentException if the message is empty.
-     */
-    public function addEmbed(Embed $embed): void {
-        $this->embeds[] = $embed;
-    }
-
-    /**
-     * Delete messages in the queue.
-     *
-     * @return void
-     */
-    public function deleteMessages(): void {
-        $this->messages = [];
-    }
-
-    /**
-     * Delete Embeds in the queue.
-     *
-     * @return void
-     */
-    public function deleteEmbeds(): void {
-        $this->embeds = [];
-    }
-
-    /**
-     * Update the queue, decrementing the timer and resetting if necessary.
-     *
-     * @return void
-     */
     public function update(): void {
-        if(--$this->timer <= 0){
-            if(empty($this->messages) and empty($this->embeds)) return;
+        if (--$this->timer <= 0) {
+            if (empty($this->payloads)) {
+                $this->timer = $this->getSendTimer();
+                return;
+            }
 
-            $message = (new Message())->setContent(join("\n", $this->messages));
-            foreach($this->embeds as $embed) $message->addEmbed($embed);
-            $this->getWebhook()->send($message);
+            foreach ($this->payloads as $payload) {
+                $this->getWebhook()->send($payload);
+            }
 
-            $this->deleteMessages();
-            $this->deleteEmbeds();
-
+            $this->deletePayloads();
             $this->timer = $this->getSendTimer();
         }
     }

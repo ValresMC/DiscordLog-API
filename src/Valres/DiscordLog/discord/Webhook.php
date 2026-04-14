@@ -27,39 +27,33 @@ declare(strict_types=1);
 
 namespace Valres\DiscordLog\discord;
 
+use JsonSerializable;
 use Valres\DiscordLog\discord\task\DiscordWebhookSendTask;
 use pocketmine\Server;
 
-class Webhook
-{
+class Webhook {
     protected string $url;
 
-    /**
-     * Constructor for the Webhook class.
-     *
-     * @param string $url The URL of the webhook.
-     */
     public function __construct(string $url) {
         $this->url = $url;
     }
 
-    /**
-     * Sends a message to the webhook.
-     *
-     * @param Message $message The message to send.
-     * @return void
-     */
-    public function send(Message $message): void {
+    public function send(JsonSerializable $message): void {
+        $url = $this->getURL();
+
+        $separator = str_contains($url, "?") ? "&" : "?";
+        if (!str_contains($url, "with_components=")) {
+            $url .= $separator . "with_components=true";
+        }
+
         Server::getInstance()->getAsyncPool()->submitTask(
-            new DiscordWebhookSendTask($this->getURL(), json_encode($message))
+            new DiscordWebhookSendTask(
+                $url,
+                json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+            )
         );
     }
 
-    /**
-     * Retrieves the URL of the webhook.
-     *
-     * @return string The URL of the webhook.
-     */
     public function getURL(): string {
         return $this->url;
     }

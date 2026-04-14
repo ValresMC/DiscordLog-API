@@ -44,7 +44,7 @@ class DiscordWebhookSendTask extends AsyncTask
      * @param string $message The message to send.
      */
     public function __construct(string $url, string $message) {
-        if(filter_var($url, FILTER_VALIDATE_URL) === false){
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
             throw new InvalidArgumentException("Invalid URL provided.");
         }
         $this->url = $url;
@@ -70,7 +70,6 @@ class DiscordWebhookSendTask extends AsyncTask
         curl_close($ch);
     }
 
-
     /**
      * Handles the completion of the asynchronous task.
      *
@@ -78,7 +77,7 @@ class DiscordWebhookSendTask extends AsyncTask
      */
     public function onCompletion(): void {
         $response = $this->getResult();
-        if(!in_array($response[1], [200, 204])){
+        if (!in_array($response[1], [200, 204])) {
             Server::getInstance()->getLogger()->error("[DiscordLog] Got error ({$response[1]}): " . $response[0]);
         }
     }

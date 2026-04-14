@@ -50,8 +50,9 @@ final class DiscordLogHandler
 
         self::$registrant = $plugin;
         $plugin->getScheduler()->scheduleRepeatingTask(new ClosureTask(function(): void {
-            $queuesInstance = MessageQueues::getInstance();
-            foreach($queuesInstance->getQueues() as $queue) $queue->update();
+            foreach(MessageQueues::getInstance()->getQueues() as $queue) {
+                $queue->update();
+            }
         }), 20);
     }
 

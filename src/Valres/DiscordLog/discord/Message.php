@@ -29,8 +29,7 @@ namespace Valres\DiscordLog\discord;
 
 use JsonSerializable;
 
-class Message implements JsonSerializable
-{
+class Message implements JsonSerializable {
     protected array $data = [];
 
     /**
@@ -101,7 +100,7 @@ class Message implements JsonSerializable
      */
     public function addEmbed(Embed $embed): self {
         $embedArray = $embed->asArray();
-        if(!empty($embedArray)){
+        if (!empty($embedArray)) {
             $this->data['embeds'][] = $embedArray;
         }
         return $this;

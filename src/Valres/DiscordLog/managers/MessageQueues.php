@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace Valres\DiscordLog\managers;
 
+use JsonSerializable;
 use pocketmine\utils\SingletonTrait;
 use Valres\DiscordLog\discord\Embed;
 use Valres\DiscordLog\discord\Webhook;
@@ -40,44 +41,23 @@ class MessageQueues
     /** @var Queue[] */
     private array $queues = [];
 
-    /**
-     * Get a queue by name.
-     *
-     * @param string $queueName Name of the queue.
-     * @return Queue|null
-     */
     public function getQueue(string $queueName): ?Queue {
         return $this->queues[$queueName] ?? null;
     }
 
-    /**
-     * Get all the queues.
-     *
-     * @return Queue[]
-     */
     public function getQueues(): array {
         return $this->queues;
     }
 
-    /**
-     * Delete all the queues.
-     *
-     * @return void
-     */
     public function deleteQueues(): void {
         $this->queues = [];
     }
 
     /**
-     * Register a messages queue.
-     * @param string  $queueName The queue name.
-     * @param Webhook $webhook   The Webhook instance.
-     * @param int     $timer     Time between each sending message.
-     * @return void
      * @throws QueueAlreadyRegisteredException
      */
     public function registerQueue(string $queueName, Webhook $webhook, int $timer): void {
-        if($this->getQueue($queueName) !== null){
+        if ($this->getQueue($queueName) !== null) {
             throw new QueueAlreadyRegisteredException("The queue '$queueName' is already registered.");
         }
 
@@ -85,34 +65,16 @@ class MessageQueues
     }
 
     /**
-     * Add a message in a queue.
-     * @param string $queueName   The queue name.
-     * @param string ...$messages The message to add.
-     * @return void
      * @throws QueueNotFoundException
      */
-    public function addMessageInQueue(string $queueName, string ...$messages): void {
+    public function addPayloadInQueue(string $queueName, JsonSerializable ...$payloads): void {
         $queue = $this->getQueue($queueName);
-        if($queue === null){
+        if ($queue === null) {
             throw new QueueNotFoundException("The queue '$queueName' is not registered.");
         }
 
-        foreach($messages as $message) $queue->addMessage($message);
-    }
-
-    /**
-     * Add an embed in a queue.
-     * @param string $queueName  The queue name.
-     * @param Embed ...$embeds   The Embed to add.
-     * @return void
-     * @throws QueueNotFoundException
-     */
-    public function addEmbedInQueue(string $queueName, Embed ...$embeds): void {
-        $queue = $this->getQueue($queueName);
-        if($queue === null){
-            throw new QueueNotFoundException("The queue '$queueName' is not registered.");
+        foreach ($payloads as $payload) {
+            $queue->addPayload($payload);
         }
-
-        foreach($embeds as $embed) $queue->addEmbed($embed);
     }
 }
